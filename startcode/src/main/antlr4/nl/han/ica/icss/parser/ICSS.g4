@@ -41,9 +41,21 @@ MIN: '-';
 MUL: '*';
 ASSIGNMENT_OPERATOR: ':=';
 
-
-
-
 //--- PARSER: ---
-stylesheet: EOF;
+// EOF
+
+// Level 0
+stylesheet: (LOWER_IDENT)? (ID_IDENT)? (CLASS_IDENT)? OPEN_BRACE + LOWER_IDENT +
+            COLON + (PIXELSIZE + SEMICOLON)? (COLOR + SEMICOLON)? (LOWER_IDENT + COLON + PIXELSIZE + SEMICOLON)?
+            CLOSE_BRACE;
+
+
+//ID_IDENT + OPEN_BRACE +
+//            LOWER_IDENT + COLON + PIXELSIZE +
+//            SEMICOLON + CLOSE_BRACE;
+
+//(LOWER_IDENT + OPEN_BRACE +
+//            LOWER_IDENT + (COLON) + COLOR + (SEMICOLON) + CLOSE_BRACE) ||
+//            LOWER_IDENT +(COLON) + PIXELSIZE +
+//            (SEMICOLON) + CLOSE_BRACE;
 
