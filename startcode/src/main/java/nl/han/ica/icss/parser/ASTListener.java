@@ -68,20 +68,33 @@ public class ASTListener extends ICSSBaseListener {
 
     @Override
     public void enterSelector(ICSSParser.SelectorContext ctx) {
-        Selector selector = new TagSelector("");
-        currentContainer.push(selector);
+        if (ctx.getText().startsWith("#")) {
+            Selector selector = new IdSelector(ctx.getText());
+            currentContainer.push(selector);
+        } else if (ctx.getText().startsWith(".")) {
+            Selector selector = new ClassSelector(ctx.getText());
+            currentContainer.push(selector);
+        } else {
+            Selector selector = new TagSelector(ctx.getText());
+            currentContainer.push(selector);
+        }
     }
 
     @Override
     public void enterProperty(ICSSParser.PropertyContext ctx) {
-        PropertyName propertyName = new PropertyName();
+        PropertyName propertyName = new PropertyName(ctx.getText());
         currentContainer.push(propertyName);
     }
 
     @Override
     public void enterValue(ICSSParser.ValueContext ctx) {
-        PixelLiteral pixelLiteral = new PixelLiteral("100px");
-        currentContainer.push(pixelLiteral);
+        if (ctx.getText().startsWith("#")) {
+            Literal literal = new ColorLiteral(ctx.getText());
+            currentContainer.push(literal);
+        } else if (ctx.getText().endsWith("px")) {
+            Literal literal = new PixelLiteral(ctx.getText());
+            currentContainer.push(literal);
+        }
     }
 
     @Override
@@ -95,9 +108,9 @@ public class ASTListener extends ICSSBaseListener {
 
     @Override
     public void exitSelector(ICSSParser.SelectorContext ctx) {
-        TagSelector selector;
+        Selector selector;
 
-        selector = (TagSelector) currentContainer.pop();
+        selector = (Selector) currentContainer.pop();
 
         ((ASTNode) currentContainer.peek()).addChild(selector);
     }
@@ -113,10 +126,11 @@ public class ASTListener extends ICSSBaseListener {
 
     @Override
     public void exitValue(ICSSParser.ValueContext ctx) {
-       PixelLiteral pixelLiteral;
+        Literal literal;
 
-       pixelLiteral = (PixelLiteral) currentContainer.pop();
+        literal = (Literal) currentContainer.pop();
 
-        ((ASTNode) currentContainer.peek()).addChild(pixelLiteral);
+
+        ((ASTNode) currentContainer.peek()).addChild(literal);
     }
 }
