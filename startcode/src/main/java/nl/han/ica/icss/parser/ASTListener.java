@@ -17,80 +17,106 @@ import nl.han.ica.icss.stack.HANStack;
  * This class extracts the ICSS Abstract Syntax Tree from the Antlr Parse tree.
  */
 public class ASTListener extends ICSSBaseListener {
-	
-	//Accumulator attributes:
-	private final AST ast;
 
-	//Use this to keep track of the parent nodes when recursively traversing the ast
-	private final HANStack currentContainer;
+    //Accumulator attributes:
+    private final AST ast;
 
-	public ASTListener() {
-		ast = new AST();
-		currentContainer = new HANStack();
-	}
+    //Use this to keep track of the parent nodes when recursively traversing the ast
+    private final HANStack currentContainer;
+
+    public ASTListener() {
+        ast = new AST();
+        currentContainer = new HANStack();
+    }
+
     public AST getAST() {
         return ast;
     }
 
     @Override
     public void enterStylesheet(ICSSParser.StylesheetContext ctx) {
-        Stylesheet stylesheet = new Stylesheet();
+        ASTNode stylesheet = new Stylesheet();
         currentContainer.push(stylesheet);
     }
 
     @Override
     public void enterStylerule(ICSSParser.StyleruleContext ctx) {
-        Stylerule styleRule = new Stylerule();
-        currentContainer.push(styleRule);
+        ASTNode stylerule = new Stylerule();
+        currentContainer.push(stylerule);
     }
 
     @Override
-    public void exitStylerule(ICSSParser.StyleruleContext ctx) {
-        Stylerule styleRule = new Stylerule();
-
-        styleRule.addChild((ASTNode) currentContainer.peek());
+    public void enterDeclaration(ICSSParser.DeclarationContext ctx) {
+        ASTNode declaration = new Declaration();
+        currentContainer.push(declaration);
     }
 
     @Override
     public void exitStylesheet(ICSSParser.StylesheetContext ctx) {
-        Stylesheet styleSheet = new Stylesheet();
-
-        ast.root = styleSheet;
-
-        styleSheet.addChild((ASTNode) currentContainer.peek());
-
-//        styleSheet.addChild((ASTNode) currentContainer.peek());
+        ast.root = (Stylesheet) currentContainer.pop();
     }
 
-//    @Override
-//    public void enterSelector(ICSSParser.SelectorContext ctx) {
-//        ASTNode selector = new TagSelector("");
-//        currentContainer.push(selector);
-//    }
-//
-//    @Override
-//    public void exitSelector(ICSSParser.SelectorContext ctx) {
-//        ASTNode selector;
-//
-//        selector = (ASTNode)currentContainer.pop();
-//
-//        selector.addChild(selector);
-//    }
-//
-//    @Override
-//    public void enterDeclaration(ICSSParser.DeclarationContext ctx) {
-//        ASTNode declaration = new Declaration();
-//        currentContainer.push(declaration);
-//    }
-//
-//    @Override
-//    public void exitDeclaration(ICSSParser.DeclarationContext ctx) {
-//        ASTNode declaration;
-//
-//        declaration = (ASTNode)currentContainer.pop();
-//
-//        declaration.addChild(declaration);
-//    }
+    @Override
+    public void exitStylerule(ICSSParser.StyleruleContext ctx) {
+        Stylerule stylerule;
+
+        stylerule = (Stylerule) currentContainer.pop();
+
+        ((ASTNode) currentContainer.peek()).addChild(stylerule);
+    }
 
 
+    @Override
+    public void enterSelector(ICSSParser.SelectorContext ctx) {
+        Selector selector = new TagSelector("");
+        currentContainer.push(selector);
+    }
+
+    @Override
+    public void enterProperty(ICSSParser.PropertyContext ctx) {
+        PropertyName propertyName = new PropertyName();
+        currentContainer.push(propertyName);
+    }
+
+    @Override
+    public void enterValue(ICSSParser.ValueContext ctx) {
+        PixelLiteral pixelLiteral = new PixelLiteral("100px");
+        currentContainer.push(pixelLiteral);
+    }
+
+    @Override
+    public void exitDeclaration(ICSSParser.DeclarationContext ctx) {
+        Declaration declaration;
+
+        declaration = (Declaration) currentContainer.pop();
+
+        ((ASTNode) currentContainer.peek()).addChild(declaration);
+    }
+
+    @Override
+    public void exitSelector(ICSSParser.SelectorContext ctx) {
+        TagSelector selector;
+
+        selector = (TagSelector) currentContainer.pop();
+
+        ((ASTNode) currentContainer.peek()).addChild(selector);
+    }
+
+    @Override
+    public void exitProperty(ICSSParser.PropertyContext ctx) {
+        PropertyName propertyName;
+
+        propertyName = (PropertyName) currentContainer.pop();
+
+        ((ASTNode) currentContainer.peek()).addChild(propertyName);
+    }
+
+    @Override
+    public void exitValue(ICSSParser.ValueContext ctx) {
+       PixelLiteral pixelLiteral;
+
+       pixelLiteral = (PixelLiteral) currentContainer.pop();
+
+        ((ASTNode) currentContainer.peek()).addChild(pixelLiteral);
+    }
 }

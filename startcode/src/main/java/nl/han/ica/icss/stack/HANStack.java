@@ -25,6 +25,6 @@ public class HANStack implements IHANStack {
 
     @Override
     public Object peek() {
-        return nodes.get(nodes.size() - 1);
+        return nodes.isEmpty() ? null : nodes.get(nodes.size()-1);
     }
 }
