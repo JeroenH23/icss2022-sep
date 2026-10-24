@@ -43,13 +43,15 @@ ASSIGNMENT_OPERATOR: ':=';
 
 //--- PARSER: ---
 
-// Level 0
-stylesheet: stylerule;
+// Level 0 + 1
+stylesheet: assignment?  stylerule+;
 stylerule: selector OPEN_BRACE declaration CLOSE_BRACE;
 selector: (LOWER_IDENT)? (ID_IDENT)? (CLASS_IDENT)?;
+assignment: variabel+;
+variabel: CAPITAL_IDENT ASSIGNMENT_OPERATOR value SEMICOLON;
 declaration: (property COLON value SEMICOLON)? property COLON value SEMICOLON;
 property: LOWER_IDENT;
-value: (COLOR)? (PIXELSIZE)?;
+value: (COLOR)? (PIXELSIZE)? (CAPITAL_IDENT?) (TRUE)? (FALSE)?;
 
 //(LOWER_IDENT)? (ID_IDENT)? (CLASS_IDENT)? OPEN_BRACE + LOWER_IDENT +
 //                  COLON + (PIXELSIZE + SEMICOLON)? (COLOR + SEMICOLON)? (LOWER_IDENT + COLON + PIXELSIZE + SEMICOLON)?
