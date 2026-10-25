@@ -44,7 +44,7 @@ ASSIGNMENT_OPERATOR: ':=';
 //--- PARSER: ---
 
 // Level 0 + 1
-stylesheet: assignment?  stylerule+;
+stylesheet: assignment? stylerule+;
 assignment: variabel+;
 variabel: CAPITAL_IDENT ASSIGNMENT_OPERATOR value SEMICOLON;
 stylerule: selector OPEN_BRACE declaration+ CLOSE_BRACE;

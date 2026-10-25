@@ -40,6 +40,18 @@ public class ASTListener extends ICSSBaseListener {
     }
 
     @Override
+    public void enterAssignment(ICSSParser.AssignmentContext ctx) {
+        VariableAssignment variableAssignment = new VariableAssignment();
+        currentContainer.push(variableAssignment);
+    }
+
+    @Override
+    public void enterVariabel(ICSSParser.VariabelContext ctx) {
+        VariableReference variableReference = new VariableReference(ctx.getText());
+        currentContainer.push(variableReference);
+    }
+
+    @Override
     public void enterStylerule(ICSSParser.StyleruleContext ctx) {
         ASTNode stylerule = new Stylerule();
         currentContainer.push(stylerule);
@@ -50,21 +62,6 @@ public class ASTListener extends ICSSBaseListener {
         ASTNode declaration = new Declaration();
         currentContainer.push(declaration);
     }
-
-    @Override
-    public void exitStylesheet(ICSSParser.StylesheetContext ctx) {
-        ast.root = (Stylesheet) currentContainer.pop();
-    }
-
-    @Override
-    public void exitStylerule(ICSSParser.StyleruleContext ctx) {
-        Stylerule stylerule;
-
-        stylerule = (Stylerule) currentContainer.pop();
-
-        ((ASTNode) currentContainer.peek()).addChild(stylerule);
-    }
-
 
     @Override
     public void enterSelector(ICSSParser.SelectorContext ctx) {
@@ -94,16 +91,45 @@ public class ASTListener extends ICSSBaseListener {
         } else if (ctx.getText().endsWith("px")) {
             Literal literal = new PixelLiteral(ctx.getText());
             currentContainer.push(literal);
+        } else if (ctx.getText().endsWith("TRUE") || ctx.getText().endsWith("FALSE")) {
+            BoolLiteral boolLiteral = new BoolLiteral(ctx.getText());
+            currentContainer.push(boolLiteral);
+        } else if (ctx.CAPITAL_IDENT() != null) {
+            VariableReference variableReference = new VariableReference(ctx.getText());
+            currentContainer.push(variableReference);
         }
     }
 
     @Override
-    public void exitDeclaration(ICSSParser.DeclarationContext ctx) {
-        Declaration declaration;
+    public void exitStylesheet(ICSSParser.StylesheetContext ctx) {
+        ast.root = (Stylesheet) currentContainer.pop();
+    }
 
-        declaration = (Declaration) currentContainer.pop();
+    @Override
+    public void exitAssignment(ICSSParser.AssignmentContext ctx) {
+        VariableAssignment variableAssignment;
 
-        ((ASTNode) currentContainer.peek()).addChild(declaration);
+        variableAssignment = (VariableAssignment) currentContainer.pop();
+
+        ((ASTNode) currentContainer.peek()).addChild(variableAssignment);
+    }
+
+    @Override
+    public void exitVariabel(ICSSParser.VariabelContext ctx) {
+        VariableReference variableReference;
+
+        variableReference = (VariableReference) currentContainer.pop();
+
+        ((ASTNode) currentContainer.peek()).addChild(variableReference);
+    }
+
+    @Override
+    public void exitStylerule(ICSSParser.StyleruleContext ctx) {
+        Stylerule stylerule;
+
+        stylerule = (Stylerule) currentContainer.pop();
+
+        ((ASTNode) currentContainer.peek()).addChild(stylerule);
     }
 
     @Override
@@ -113,6 +139,15 @@ public class ASTListener extends ICSSBaseListener {
         selector = (Selector) currentContainer.pop();
 
         ((ASTNode) currentContainer.peek()).addChild(selector);
+    }
+
+    @Override
+    public void exitDeclaration(ICSSParser.DeclarationContext ctx) {
+        Declaration declaration;
+
+        declaration = (Declaration) currentContainer.pop();
+
+        ((ASTNode) currentContainer.peek()).addChild(declaration);
     }
 
     @Override
@@ -126,11 +161,10 @@ public class ASTListener extends ICSSBaseListener {
 
     @Override
     public void exitValue(ICSSParser.ValueContext ctx) {
-        Literal literal;
+        Expression expression;
 
-        literal = (Literal) currentContainer.pop();
+        expression = (Expression) currentContainer.pop();
 
-
-        ((ASTNode) currentContainer.peek()).addChild(literal);
+        ((ASTNode) currentContainer.peek()).addChild(expression);
     }
 }
