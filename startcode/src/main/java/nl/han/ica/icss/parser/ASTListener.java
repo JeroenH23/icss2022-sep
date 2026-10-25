@@ -40,13 +40,13 @@ public class ASTListener extends ICSSBaseListener {
     }
 
     @Override
-    public void enterAssignment(ICSSParser.AssignmentContext ctx) {
+    public void enterVariabeleassignment(ICSSParser.VariabeleassignmentContext ctx) {
         VariableAssignment variableAssignment = new VariableAssignment();
         currentContainer.push(variableAssignment);
     }
 
     @Override
-    public void enterVariabel(ICSSParser.VariabelContext ctx) {
+    public void enterVariabelreference(ICSSParser.VariabelreferenceContext ctx) {
         VariableReference variableReference = new VariableReference(ctx.getText());
         currentContainer.push(variableReference);
     }
@@ -105,8 +105,9 @@ public class ASTListener extends ICSSBaseListener {
         ast.root = (Stylesheet) currentContainer.pop();
     }
 
+
     @Override
-    public void exitAssignment(ICSSParser.AssignmentContext ctx) {
+    public void exitVariabeleassignment(ICSSParser.VariabeleassignmentContext ctx) {
         VariableAssignment variableAssignment;
 
         variableAssignment = (VariableAssignment) currentContainer.pop();
@@ -115,7 +116,7 @@ public class ASTListener extends ICSSBaseListener {
     }
 
     @Override
-    public void exitVariabel(ICSSParser.VariabelContext ctx) {
+    public void exitVariabelreference(ICSSParser.VariabelreferenceContext ctx) {
         VariableReference variableReference;
 
         variableReference = (VariableReference) currentContainer.pop();

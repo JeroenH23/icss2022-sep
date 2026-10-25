@@ -44,11 +44,20 @@ ASSIGNMENT_OPERATOR: ':=';
 //--- PARSER: ---
 
 // Level 0 + 1
-stylesheet: assignment? stylerule+;
-assignment: variabel+;
-variabel: CAPITAL_IDENT ASSIGNMENT_OPERATOR value SEMICOLON;
+stylesheet: (variabeleassignment | stylerule)+;
+variabeleassignment: variabelreference ASSIGNMENT_OPERATOR value SEMICOLON;
+variabelreference: CAPITAL_IDENT;
 stylerule: selector OPEN_BRACE declaration+ CLOSE_BRACE;
 selector: (LOWER_IDENT)? (ID_IDENT)? (CLASS_IDENT)?;
-declaration: property+ COLON value SEMICOLON;
+declaration: property COLON value SEMICOLON;
 property: LOWER_IDENT;
 value: (COLOR)? (PIXELSIZE)? (CAPITAL_IDENT?) (TRUE)? (FALSE)?;
+
+//stylesheet: variabeleassignment+ stylerule+;
+//variabeleassignment: variabelreference;
+//variabelreference: CAPITAL_IDENT ASSIGNMENT_OPERATOR value SEMICOLON;
+//stylerule: selector OPEN_BRACE declaration+ CLOSE_BRACE;
+//selector: (LOWER_IDENT)? (ID_IDENT)? (CLASS_IDENT)?;
+//declaration: property+ COLON value SEMICOLON;
+//property: LOWER_IDENT;
+//value: (COLOR)? (PIXELSIZE)? (CAPITAL_IDENT?) (TRUE)? (FALSE)?;
