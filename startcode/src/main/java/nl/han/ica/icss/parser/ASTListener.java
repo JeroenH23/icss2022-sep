@@ -85,49 +85,34 @@ public class ASTListener extends ICSSBaseListener {
 
     @Override
     public void enterValue(ICSSParser.ValueContext ctx) {
-        if (ctx.getText().startsWith("#")) {
+        if (ctx.COLOR() != null) {
             Literal literal = new ColorLiteral(ctx.getText());
             currentContainer.push(literal);
-        } else if (ctx.getText().endsWith("px") && ctx.PLUS() == null && ctx.MUL() == null && ctx.SCALAR() == null) {
+        } else if (ctx.PIXELSIZE() != null) {
             Literal literal = new PixelLiteral(ctx.getText());
             currentContainer.push(literal);
-        } else if (ctx.getText().endsWith("TRUE") || ctx.getText().endsWith("FALSE")) {
-            BoolLiteral boolLiteral = new BoolLiteral(ctx.getText());
+        } else if (ctx.TRUE() != null || ctx.FALSE() != null) {
+            Literal boolLiteral = new BoolLiteral(ctx.getText());
             currentContainer.push(boolLiteral);
         } else if (ctx.CAPITAL_IDENT() != null) {
             VariableReference variableReference = new VariableReference(ctx.getText());
             currentContainer.push(variableReference);
-        } else if (ctx.PLUS() != null) {
+        } else if (ctx.expression().add() != null) {
             AddOperation addOperation = new AddOperation();
             currentContainer.push(addOperation);
-        } else if (ctx.MUL() != null) {
+        } else if (ctx.expression().multiply() != null) {
             MultiplyOperation multiplyOperation = new MultiplyOperation();
             currentContainer.push(multiplyOperation);
-        } else  if (ctx.SCALAR() != null) {
-            ScalarLiteral scalarLiteral = new ScalarLiteral(ctx.getText());
-            currentContainer.push(scalarLiteral);
         }
-
-//        else if (ctx.add() != null) {
-//            AddOperation addOperation = new AddOperation();
-//            currentContainer.push(addOperation);
-//        } else if (ctx.multiply() != null) {
-//            MultiplyOperation multiplyOperation = new MultiplyOperation();
-//            currentContainer.push(multiplyOperation);
-//        }
     }
 
-//    @Override
-//    public void enterAdd(ICSSParser.AddContext ctx) {
-//        AddOperation addOperation = new AddOperation();
-//        currentContainer.push(addOperation);
-//    }
-//
-//    @Override
-//    public void enterMultiply(ICSSParser.MultiplyContext ctx) {
-//        MultiplyOperation multiplyOperation = new MultiplyOperation();
-//        currentContainer.push(multiplyOperation);
-//    }
+    @Override
+    public void enterMultiply(ICSSParser.MultiplyContext ctx) {
+        MultiplyOperation multiplyOperation = new MultiplyOperation();
+        currentContainer.push(multiplyOperation);
+
+
+    }
 
     @Override
     public void exitStylesheet(ICSSParser.StylesheetContext ctx) {
@@ -198,21 +183,12 @@ public class ASTListener extends ICSSBaseListener {
         ((ASTNode) currentContainer.peek()).addChild(expression);
     }
 
-//    @Override
-//    public void exitAdd(ICSSParser.AddContext ctx) {
-//        AddOperation addOperation;
-//
-//        addOperation = (AddOperation) currentContainer.pop();
-//
-//        ((ASTNode) currentContainer.peek()).addChild(addOperation);
-//    }
-//
-//    @Override
-//    public void exitMultiply(ICSSParser.MultiplyContext ctx) {
-//        MultiplyOperation multiplyOperation;
-//
-//        multiplyOperation = (MultiplyOperation) currentContainer.pop();
-//
-//        ((ASTNode) currentContainer.peek()).addChild(multiplyOperation);
-//    }
+    @Override
+    public void exitMultiply(ICSSParser.MultiplyContext ctx) {
+        MultiplyOperation multiplyOperation;
+
+        multiplyOperation = (MultiplyOperation) currentContainer.pop();
+
+        ((ASTNode) currentContainer.peek()).addChild(multiplyOperation);
+    }
 }

@@ -48,11 +48,27 @@ stylesheet: (variabeleassignment | stylerule)+;
 variabeleassignment: variabelreference ASSIGNMENT_OPERATOR value SEMICOLON;
 variabelreference: CAPITAL_IDENT;
 stylerule: selector OPEN_BRACE declaration+ CLOSE_BRACE;
-selector: (LOWER_IDENT)? (ID_IDENT)? (CLASS_IDENT)?;
+selector: (LOWER_IDENT | ID_IDENT | CLASS_IDENT)+;
 declaration: property COLON value SEMICOLON;
 property: LOWER_IDENT;
-value: (COLOR)? (PIXELSIZE)? (CAPITAL_IDENT)? (TRUE)? (FALSE)? (CAPITAL_IDENT PLUS SCALAR MUL PIXELSIZE)?;
+value: (COLOR | PIXELSIZE | CAPITAL_IDENT | TRUE | FALSE | expression);
+expression: add PLUS SCALAR multiply;
+add: variabelreference;
+multiply: SCALAR MUL value;
 
+//expression:
+//    expression PLUS expression #addExpression |
+//    PIXELSIZE #pixelLiteral;
+
+//add: variabelreference PLUS multiply;
+//multiply: SCALAR MUL PIXELSIZE;W
+
+//
+//expression:
+//    expression PLUS expression #addExpression |
+//    PIXELSIZE #pixelLiteral
+
+// mogelijk een andere klasse toevoegen voor de if statements
 //(add PLUS multiply)?
 
 //stylesheet: variabeleassignment+ stylerule+;
