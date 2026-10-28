@@ -43,34 +43,26 @@ ASSIGNMENT_OPERATOR: ':=';
 
 //--- PARSER: ---
 
-// Level 0 + 1 + 2
+// Level 0 + 1 + 2 + 3
 stylesheet: (variabeleassignment | stylerule)+;
 variabeleassignment: variabelreference ASSIGNMENT_OPERATOR value SEMICOLON;
 variabelreference: CAPITAL_IDENT;
-stylerule: selector OPEN_BRACE declaration+ CLOSE_BRACE;
+
+stylerule: selector OPEN_BRACE (declaration | if)+ CLOSE_BRACE;
 selector: (LOWER_IDENT | ID_IDENT | CLASS_IDENT)+;
 declaration: property COLON value SEMICOLON;
 property: LOWER_IDENT;
 value: (COLOR | PIXELSIZE | CAPITAL_IDENT | TRUE | FALSE | expression);
-expression: add PLUS multiply;
-add: variabelreference;
-multiply: scalar MUL value;
-scalar: SCALAR;
 
-//expression:
-//    expression PLUS expression #addExpression |
-//    PIXELSIZE #pixelLiteral;
-
-//add: variabelreference PLUS multiply;
-//multiply: SCALAR MUL PIXELSIZE;W
-
-//
-//expression:
-//    expression PLUS expression #addExpression |
-//    PIXELSIZE #pixelLiteral
+if: IF BOX_BRACKET_OPEN variabelreference BOX_BRACKET_CLOSE OPEN_BRACE property COLON value SEMICOLON nestedif;
+nestedif: IF BOX_BRACKET_OPEN variabelreference BOX_BRACKET_CLOSE OPEN_BRACE property COLON value SEMICOLON CLOSE_BRACE else;
+else: ELSE OPEN_BRACE property COLON value SEMICOLON CLOSE_BRACE CLOSE_BRACE declaration;
+expression: (add | multiply)+;
+add: variabelreference PLUS;
+multiply: (scalar | MUL | SEMICOLON);
+scalar: SCALAR | PIXELSIZE;
 
 // mogelijk een andere klasse toevoegen voor de if statements
-//(add PLUS multiply)?
 
 //stylesheet: variabeleassignment+ stylerule+;
 //variabeleassignment: variabelreference;
