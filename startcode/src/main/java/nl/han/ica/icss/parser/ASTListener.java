@@ -110,8 +110,12 @@ public class ASTListener extends ICSSBaseListener {
     public void enterMultiply(ICSSParser.MultiplyContext ctx) {
         MultiplyOperation multiplyOperation = new MultiplyOperation();
         currentContainer.push(multiplyOperation);
+    }
 
-
+    @Override
+    public void enterScalar(ICSSParser.ScalarContext ctx) {
+        ScalarLiteral scalarLiteral = new ScalarLiteral(ctx.getText());
+        currentContainer.push(scalarLiteral);
     }
 
     @Override
@@ -190,5 +194,14 @@ public class ASTListener extends ICSSBaseListener {
         multiplyOperation = (MultiplyOperation) currentContainer.pop();
 
         ((ASTNode) currentContainer.peek()).addChild(multiplyOperation);
+    }
+
+    @Override
+    public void exitScalar(ICSSParser.ScalarContext ctx) {
+        ScalarLiteral scalarLiteral;
+
+        scalarLiteral = (ScalarLiteral) currentContainer.pop();
+
+        ((ASTNode) currentContainer.peek()).addChild(scalarLiteral);
     }
 }

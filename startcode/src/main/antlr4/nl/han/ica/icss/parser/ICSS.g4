@@ -52,9 +52,10 @@ selector: (LOWER_IDENT | ID_IDENT | CLASS_IDENT)+;
 declaration: property COLON value SEMICOLON;
 property: LOWER_IDENT;
 value: (COLOR | PIXELSIZE | CAPITAL_IDENT | TRUE | FALSE | expression);
-expression: add PLUS SCALAR multiply;
+expression: add PLUS multiply;
 add: variabelreference;
-multiply: SCALAR MUL value;
+multiply: scalar MUL value;
+scalar: SCALAR;
 
 //expression:
 //    expression PLUS expression #addExpression |
