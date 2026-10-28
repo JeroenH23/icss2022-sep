@@ -48,18 +48,18 @@ stylesheet: (variabeleassignment | stylerule)+;
 variabeleassignment: variabelreference ASSIGNMENT_OPERATOR value SEMICOLON;
 variabelreference: CAPITAL_IDENT;
 
-stylerule: selector OPEN_BRACE (declaration | if)+ CLOSE_BRACE;
+stylerule: selector OPEN_BRACE declaration+ CLOSE_BRACE;
 selector: (LOWER_IDENT | ID_IDENT | CLASS_IDENT)+;
 declaration: property COLON value SEMICOLON;
 property: LOWER_IDENT;
 value: (COLOR | PIXELSIZE | CAPITAL_IDENT | TRUE | FALSE | expression);
 
-if: IF BOX_BRACKET_OPEN variabelreference BOX_BRACKET_CLOSE OPEN_BRACE property COLON value SEMICOLON nestedif;
-nestedif: IF BOX_BRACKET_OPEN variabelreference BOX_BRACKET_CLOSE OPEN_BRACE property COLON value SEMICOLON CLOSE_BRACE else;
-else: ELSE OPEN_BRACE property COLON value SEMICOLON CLOSE_BRACE CLOSE_BRACE declaration;
-expression: (add | multiply)+;
+//if: IF BOX_BRACKET_OPEN variabelreference BOX_BRACKET_CLOSE OPEN_BRACE declaration nestedif;
+//nestedif: IF BOX_BRACKET_OPEN variabelreference BOX_BRACKET_CLOSE OPEN_BRACE declaration CLOSE_BRACE else;
+//else: ELSE OPEN_BRACE property COLON value SEMICOLON CLOSE_BRACE CLOSE_BRACE declaration;
+expression: add multiply;
 add: variabelreference PLUS;
-multiply: (scalar | MUL | SEMICOLON);
+multiply: scalar MUL value;
 scalar: SCALAR | PIXELSIZE;
 
 // mogelijk een andere klasse toevoegen voor de if statements
