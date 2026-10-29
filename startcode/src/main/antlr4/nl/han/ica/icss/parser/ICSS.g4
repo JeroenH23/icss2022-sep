@@ -48,18 +48,26 @@ stylesheet: (variabeleassignment | stylerule)+;
 variabeleassignment: variabelreference ASSIGNMENT_OPERATOR value SEMICOLON;
 variabelreference: CAPITAL_IDENT;
 
-stylerule: selector OPEN_BRACE (declaration | ifstatement)+ CLOSE_BRACE;
+stylerule: selector OPEN_BRACE (declaration | statement)+ CLOSE_BRACE;
 selector: (LOWER_IDENT | ID_IDENT | CLASS_IDENT)+;
 declaration: property COLON value SEMICOLON;
 property: LOWER_IDENT;
-value: (COLOR | PIXELSIZE | CAPITAL_IDENT | TRUE | FALSE | expression);
+value: (valuestypes | addoperation);
+valuestypes: (COLOR | PIXELSIZE | CAPITAL_IDENT | TRUE | FALSE);
 
-ifstatement: IF BOX_BRACKET_OPEN variabelreference BOX_BRACKET_CLOSE OPEN_BRACE declaration nestedifstatement;
-nestedifstatement: IF BOX_BRACKET_OPEN variabelreference BOX_BRACKET_CLOSE OPEN_BRACE declaration CLOSE_BRACE elsestatement;
-elsestatement: ELSE OPEN_BRACE declaration CLOSE_BRACE CLOSE_BRACE declaration;
-expression: add;
-add: variabelreference PLUS multiply;
-multiply: (scalar | MUL | value)*;
+statement: (ifstatement | elsestatement)+;
+ifstatement: IF BOX_BRACKET_OPEN variabelreference BOX_BRACKET_CLOSE OPEN_BRACE declaration (CLOSE_BRACE | ifstatement)+;
+elsestatement: ELSE OPEN_BRACE declaration CLOSE_BRACE CLOSE_BRACE;
+addoperation: (leftside | rightside)+;
+leftside: variabelreference PLUS;
+rightside: multiplyoperation;
+multiplyoperation: (MUL | scalar | valuestypes)+;
 scalar: SCALAR;
+
+//addoperation: (variabelreference | operator | multiplyoperation)+;
+
+
+//multiplyoperation: (MUL);
+//operator: (PLUS | MIN | scalar | valuestypes);
 
 // mogelijk een andere klasse toevoegen voor de if statements

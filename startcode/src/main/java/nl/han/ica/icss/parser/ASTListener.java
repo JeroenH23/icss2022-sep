@@ -85,31 +85,53 @@ public class ASTListener extends ICSSBaseListener {
 
     @Override
     public void enterValue(ICSSParser.ValueContext ctx) {
-        if (ctx.COLOR() != null) {
-            Literal literal = new ColorLiteral(ctx.getText());
-            currentContainer.push(literal);
-        } else if (ctx.PIXELSIZE() != null) {
-            Literal literal = new PixelLiteral(ctx.getText());
-            currentContainer.push(literal);
-        } else if (ctx.TRUE() != null || ctx.FALSE() != null) {
-            Literal boolLiteral = new BoolLiteral(ctx.getText());
-            currentContainer.push(boolLiteral);
-        } else if (ctx.CAPITAL_IDENT() != null) {
-            VariableReference variableReference = new VariableReference(ctx.getText());
-            currentContainer.push(variableReference);
-        } else if (ctx.expression().add() != null) {
-            AddOperation addOperation = new AddOperation();
-            currentContainer.push(addOperation);
-        } else if (ctx.expression().multiply() != null) {
-            MultiplyOperation multiplyOperation = new MultiplyOperation();
-            currentContainer.push(multiplyOperation);
+
+        if (ctx.valuestypes() != null) {
+            var types = ctx.valuestypes();
+
+            if (types.COLOR() != null) {
+                Literal literal = new ColorLiteral(ctx.getText());
+                currentContainer.push(literal);
+            } else if (types.PIXELSIZE() != null) {
+                Literal literal = new PixelLiteral(ctx.getText());
+                currentContainer.push(literal);
+            } else if (types.TRUE() != null || types.FALSE() != null) {
+                Literal boolLiteral = new BoolLiteral(ctx.getText());
+                currentContainer.push(boolLiteral);
+            } else if (types.CAPITAL_IDENT() != null) {
+                VariableReference variableReference = new VariableReference(ctx.getText());
+                currentContainer.push(variableReference);
+            }
+        }
+        if (ctx.addoperation() != null) {
+            var addoperation = ctx.addoperation();
+
+            if (addoperation.leftside() != null) {
+                AddOperation addOperation = new AddOperation();
+                currentContainer.push(addOperation);
+            } else if (addoperation.rightside() != null) {
+                MultiplyOperation multiplyOperation = new MultiplyOperation();
+                currentContainer.push(multiplyOperation);
+            }
         }
     }
 
     @Override
-    public void enterMultiply(ICSSParser.MultiplyContext ctx) {
+    public void enterMultiplyoperation(ICSSParser.MultiplyoperationContext ctx) {
         MultiplyOperation multiplyOperation = new MultiplyOperation();
         currentContainer.push(multiplyOperation);
+    }
+
+    @Override
+    public void enterIfstatement(ICSSParser.IfstatementContext ctx) {
+        IfClause ifClause = new IfClause();
+        currentContainer.push(ifClause);
+    }
+
+    @Override
+    public void enterElsestatement(ICSSParser.ElsestatementContext ctx) {
+        ElseClause elseClause = new ElseClause();
+        currentContainer.push(elseClause);
     }
 
     @Override
@@ -188,12 +210,30 @@ public class ASTListener extends ICSSBaseListener {
     }
 
     @Override
-    public void exitMultiply(ICSSParser.MultiplyContext ctx) {
+    public void exitMultiplyoperation(ICSSParser.MultiplyoperationContext ctx) {
         MultiplyOperation multiplyOperation;
 
         multiplyOperation = (MultiplyOperation) currentContainer.pop();
 
         ((ASTNode) currentContainer.peek()).addChild(multiplyOperation);
+    }
+
+    @Override
+    public void exitIfstatement(ICSSParser.IfstatementContext ctx) {
+        IfClause ifClause;
+
+        ifClause = (IfClause) currentContainer.pop();
+
+        ((ASTNode) currentContainer.peek()).addChild(ifClause);
+    }
+
+    @Override
+    public void exitElsestatement(ICSSParser.ElsestatementContext ctx) {
+        ElseClause elseClause;
+
+        elseClause = (ElseClause) currentContainer.pop();
+
+        ((ASTNode) currentContainer.peek()).addChild(elseClause);
     }
 
     @Override
