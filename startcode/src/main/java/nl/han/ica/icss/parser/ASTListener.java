@@ -117,6 +117,15 @@ public class ASTListener extends ICSSBaseListener {
     }
 
     @Override
+    public void enterAddoperation(ICSSParser.AddoperationContext ctx) {
+        if (ctx.isEmpty()) {
+            ctx.removeLastChild();
+        }
+    }
+//        ctx.removeLastChild();
+
+
+    @Override
     public void enterMultiplyoperation(ICSSParser.MultiplyoperationContext ctx) {
         MultiplyOperation multiplyOperation = new MultiplyOperation();
         currentContainer.push(multiplyOperation);
@@ -244,4 +253,6 @@ public class ASTListener extends ICSSBaseListener {
 
         ((ASTNode) currentContainer.peek()).addChild(scalarLiteral);
     }
+
+
 }

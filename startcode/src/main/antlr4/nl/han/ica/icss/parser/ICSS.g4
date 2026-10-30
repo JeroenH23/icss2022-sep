@@ -52,17 +52,20 @@ stylerule: selector OPEN_BRACE (declaration | statement)+ CLOSE_BRACE;
 selector: (LOWER_IDENT | ID_IDENT | CLASS_IDENT)+;
 declaration: property COLON value SEMICOLON;
 property: LOWER_IDENT;
-value: (valuestypes | addoperation);
+value: (valuestypes | addoperation | multiplyoperation);
 valuestypes: (COLOR | PIXELSIZE | CAPITAL_IDENT | TRUE | FALSE);
 
 statement: (ifstatement | elsestatement)+;
 ifstatement: IF BOX_BRACKET_OPEN variabelreference BOX_BRACKET_CLOSE OPEN_BRACE declaration (CLOSE_BRACE | ifstatement)+;
-elsestatement: ELSE OPEN_BRACE declaration CLOSE_BRACE CLOSE_BRACE;
-addoperation: (leftside | rightside)+;
-leftside: variabelreference PLUS;
-rightside: multiplyoperation;
-multiplyoperation: (MUL | scalar | valuestypes)+;
+elsestatement: ELSE OPEN_BRACE (declaration | CLOSE_BRACE)+;
+
+addoperation: leftside (PLUS rightside)+;
+leftside: variabelreference;
+rightside: (multiplyoperation | nomultiply | valuestypes | variabelreference);
+nomultiply: value;
+multiplyoperation: (MUL | scalar)+ value;
 scalar: SCALAR;
+
 
 //addoperation: (variabelreference | operator | multiplyoperation)+;
 
