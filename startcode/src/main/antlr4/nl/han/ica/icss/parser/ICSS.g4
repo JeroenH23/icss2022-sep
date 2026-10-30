@@ -50,8 +50,8 @@ variabelreference: CAPITAL_IDENT;
 
 stylerule: selector OPEN_BRACE (declaration | statement)+ CLOSE_BRACE;
 selector: (LOWER_IDENT | ID_IDENT | CLASS_IDENT)+;
-declaration: property COLON value SEMICOLON;
-property: LOWER_IDENT;
+declaration: property (ASSIGNMENT_OPERATOR | COLON)  value SEMICOLON;
+property: LOWER_IDENT | CAPITAL_IDENT;
 value: (valuestypes | addoperation | multiplyoperation);
 valuestypes: (COLOR | PIXELSIZE | CAPITAL_IDENT | TRUE | FALSE);
 
